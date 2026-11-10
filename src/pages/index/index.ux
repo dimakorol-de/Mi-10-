@@ -1,0 +1,57 @@
+<template>
+  <div class="container">
+    <text class="note-text">{{text || 'Заметка пуста...'}}</text>
+    
+    <div class="row">
+      <input type="button" class="btn" value="⌫" onclick="deleteChar" />
+      <input type="button" class="btn" value="Пробел" onclick="addChar(' ')" />
+      <input type="button" class="btn" value="Очистить" onclick="clearAll" />
+    </div>
+
+    <div class="row" for="{{row in keyboard}}">
+      <input type="button" class="key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
+    </div>
+  </div>
+</template>
+
+<style>
+  .container { flex-direction: column; align-items: center; padding: 10px; }
+  .note-text { font-size: 22px; margin-bottom: 15px; text-align: center; }
+  .row { flex-direction: row; margin-bottom: 5px; }
+  .btn { width: 60px; height: 35px; font-size: 16px; margin: 2px; }
+  .key { width: 30px; height: 35px; font-size: 18px; margin: 1px; }
+</style>
+
+<script>
+import storage from '@system.storage';
+
+export default {
+  private: {
+    text: '',
+    keyboard: [
+      ['1','2','3','4','5','6','7','8','9','0'],
+      ['Й','Ц','У','К','Е','Н','Г','Ш','Щ','З','Х','Ъ'],
+      ['Ф','Ы','В','А','П','Р','О','Л','Д','Ж','Э'],
+      ['Я','Ч','С','М','И','Т','Ь','Б','Ю']
+    ]
+  },
+  onInit() {
+    storage.get({ key: 'note', success: (data) => { this.text = data || ''; } });
+  },
+  addChar(char) {
+    this.text += char;
+    this.save();
+  },
+  deleteChar() {
+    this.text = this.text.slice(0, -1);
+    this.save();
+  },
+  clearAll() {
+    this.text = '';
+    this.save();
+  },
+  save() {
+    storage.set({ key: 'note', value: this.text });
+  }
+}
+</script>
