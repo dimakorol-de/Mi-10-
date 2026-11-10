@@ -54,4 +54,4 @@ export default {
     storage.set({ key: 'note', value: this.text });
   }
 }
-</script>
+</script> 
