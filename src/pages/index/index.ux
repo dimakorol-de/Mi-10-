@@ -1,21 +1,41 @@
 <template>
   <div class="container">
-    <text class="note-text">{{text || 'Заметка пуста...'}}</text>
-    
-    <div class="row">
-      <input type="button" class="btn" value="⌫" onclick="deleteChar" />
-      <input type="button" class="btn" value="Пробел" onclick="addChar(' ')" />
-      <input type="button" class="btn" value="Очистить" onclick="clearAll" />
+    <!-- СПИСОК ЗАМЕТОК -->
+    <div if="{{!showKeyboard}}" class="list-container">
+      <text class="title">Мои заметки</text>
+      <input type="button" class="btn-add" value="+ Новая" onclick="createNote" />
+      
+      <div class="note-item" for="{{(index, item) in notes}}" onclick="openNote(index)">
+        <text class="note-title">{{item || 'Пустая заметка'}}</text>
+        <input type="button" class="btn-del" value="X" onclick="deleteNote(index)" />
+      </div>
     </div>
 
-    <div class="row" for="{{row in keyboard}}">
-      <input type="button" class="key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
+    <!-- КЛАВИАТУРА И РЕДАКТОР -->
+    <div if="{{showKeyboard}}" class="editor-container">
+      <text class="note-text">{{currentText || '...'}}</text>
+      
+      <div class="row">
+        <input type="button" class="btn" value="⌫" onclick="deleteChar" />
+        <input type="button" class="btn" value="Пробел" onclick="addChar(' ')" />
+        <input type="button" class="btn" value="Назад" onclick="closeKeyboard" />
+      </div>
+
+      <div class="row" for="{{row in keyboard}}">
+        <input type="button" class="key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
+      </div>
     </div>
   </div>
 </template>
 
 <style>
   .container { flex-direction: column; align-items: center; padding: 10px; }
+  .title { font-size: 24px; margin-bottom: 10px; }
+  .btn-add { width: 180px; height: 40px; font-size: 18px; margin-bottom: 10px; }
+  .note-item { flex-direction: row; width: 200px; justify-content: space-between; margin-bottom: 5px; }
+  .note-title { font-size: 18px; width: 150px; }
+  .btn-del { width: 40px; height: 35px; }
+  
   .note-text { font-size: 22px; margin-bottom: 15px; text-align: center; }
   .row { flex-direction: row; margin-bottom: 5px; }
   .btn { width: 60px; height: 35px; font-size: 16px; margin: 2px; }
@@ -27,7 +47,10 @@ import storage from '@system.storage';
 
 export default {
   private: {
-    text: '',
+    notes: [],
+    currentText: '',
+    currentIndex: -1,
+    showKeyboard: false,
     keyboard: [
       ['1','2','3','4','5','6','7','8','9','0'],
       ['Й','Ц','У','К','Е','Н','Г','Ш','Щ','З','Х','Ъ'],
@@ -36,22 +59,45 @@ export default {
     ]
   },
   onInit() {
-    storage.get({ key: 'note', success: (data) => { this.text = data || ''; } });
+    this.loadNotes();
+  },
+  loadNotes() {
+    storage.get({
+      key: 'all_notes',
+      success: (data) => { this.notes = data ? JSON.parse(data) : []; }
+    });
+  },
+  saveNotes() {
+    storage.set({ key: 'all_notes', value: JSON.stringify(this.notes) });
+  },
+  createNote() {
+    this.notes.push('');
+    this.currentIndex = this.notes.length - 1;
+    this.currentText = '';
+    this.showKeyboard = true;
+    this.saveNotes();
+  },
+  openNote(index) {
+    this.currentIndex = index;
+    this.currentText = this.notes[index];
+    this.showKeyboard = true;
+  },
+  deleteNote(index) {
+    this.notes.splice(index, 1);
+    this.saveNotes();
   },
   addChar(char) {
-    this.text += char;
-    this.save();
+    this.currentText += char;
+    this.notes[this.currentIndex] = this.currentText;
+    this.saveNotes();
   },
   deleteChar() {
-    this.text = this.text.slice(0, -1);
-    this.save();
+    this.currentText = this.currentText.slice(0, -1);
+    this.notes[this.currentIndex] = this.currentText;
+    this.saveNotes();
   },
-  clearAll() {
-    this.text = '';
-    this.save();
-  },
-  save() {
-    storage.set({ key: 'note', value: this.text });
+  closeKeyboard() {
+    this.showKeyboard = false;
   }
 }
-</script> 
+</script>
