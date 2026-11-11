@@ -25,5 +25,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rpk-build
-          path: dist/*.rpk
+          path: '**/*.rpk'
           if-no-files-found: error
