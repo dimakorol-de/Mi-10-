@@ -5,24 +5,24 @@
     </div>
     
     <div class="row">
-      <input type="button" class="btn" value="⌫" onclick="deleteChar" />
-      <input type="button" class="btn" value="Пробел" onclick="addChar(' ')" />
-      <input type="button" class="btn" value="Очистить" onclick="clearAll" />
+      <input type="button" class="btn-action" value="⌫" onclick="deleteChar" />
+      <input type="button" class="btn-action" value="Пробел" onclick="addChar(' ')" />
+      <input type="button" class="btn-action" value="{{isNumeric ? 'АБВ' : '123'}}" onclick="toggleKeyboard" />
     </div>
 
-    <div class="row" for="{{row in keyboard}}">
+    <div class="row" for="{{row in currentKeyboard}}">
       <input type="button" class="key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
     </div>
   </div>
 </template>
 
 <style>
-  .container { flex-direction: column; align-items: center; padding: 10px; }
-  .text-container { width: 190px; margin-bottom: 15px; }
-  .note-text { font-size: 22px; text-align: left; }
-  .row { flex-direction: row; margin-bottom: 5px; }
-  .btn { width: 60px; height: 35px; font-size: 16px; margin: 2px; }
-  .key { width: 30px; height: 35px; font-size: 18px; margin: 1px; }
+  .container { flex-direction: column; align-items: center; padding: 10px; background-color: #000000; }
+  .text-container { width: 190px; min-height: 60px; margin-bottom: 15px; background-color: #1c1c1e; border-radius: 10px; padding: 10px; }
+  .note-text { font-size: 22px; color: #ffffff; text-align: left; }
+  .row { flex-direction: row; margin-bottom: 6px; justify-content: center; width: 212px; }
+  .btn-action { width: 60px; height: 40px; font-size: 16px; margin: 0 3px; border-radius: 8px; background-color: #2c2c2e; color: #ffffff; }
+  .key { width: 35px; height: 40px; font-size: 20px; margin: 0 2px; border-radius: 8px; background-color: #2c2c2e; color: #ffffff; }
 </style>
 
 <script>
@@ -31,12 +31,23 @@ import storage from '@system.storage';
 export default {
   private: {
     text: '',
-    keyboard: [
-      ['1','2','3','4','5','6','7','8','9','0'],
-      ['Й','Ц','У','К','Е','Н','Г','Ш','Щ','З','Х','Ъ'],
-      ['Ф','Ы','В','А','П','Р','О','Л','Д','Ж','Э'],
-      ['Я','Ч','С','М','И','Т','Ь','Б','Ю']
+    isNumeric: false,
+    letters: [
+      ['Й','Ц','У','К','Е','Н','Г','Ш','Щ','З'],
+      ['Ф','Ы','В','А','П','Р','О','Л','Д','Ж'],
+      ['Я','Ч','С','М','И','Т','Ь','Б','Ю','Х']
+    ],
+    numbers: [
+      ['1','2','3'],
+      ['4','5','6'],
+      ['7','8','9'],
+      ['.','0',',']
     ]
+  },
+  computed: {
+    currentKeyboard() {
+      return this.isNumeric ? this.numbers : this.letters;
+    }
   },
   onInit() {
     storage.get({ key: 'note', success: (data) => { this.text = data || ''; } });
@@ -49,13 +60,11 @@ export default {
     this.text = this.text.slice(0, -1);
     this.save();
   },
-  clearAll() {
-    this.text = '';
-    this.save();
+  toggleKeyboard() {
+    this.isNumeric = !this.isNumeric;
   },
   save() {
     storage.set({ key: 'note', value: this.text });
   }
 }
 </script>
-</coreResponse>
