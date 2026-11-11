@@ -13,7 +13,13 @@
 
     <!-- КЛАВИАТУРА И РЕДАКТОР -->
     <div if="{{showKeyboard}}" class="editor-container">
-      <text class="note-text">{{currentText || '...'}}</text>
+      <text class="note-text">{{displayText}}</text>
+      
+      <div class="row">
+        <input type="button" class="btn" value="←" onclick="moveCursor(-1)" />
+        <input type="button" class="btn" value="→" onclick="moveCursor(1)" />
+        <input type="button" class="btn" value="↵" onclick="addChar('\n')" />
+      </div>
       
       <div class="row">
         <input type="button" class="btn" value="⌫" onclick="deleteChar" />
@@ -50,6 +56,7 @@ export default {
     notes: [],
     currentText: '',
     currentIndex: -1,
+    cursorPos: 0,
     showKeyboard: false,
     keyboard: [
       ['1','2','3','4','5','6','7','8','9','0'],
@@ -58,14 +65,16 @@ export default {
       ['Я','Ч','С','М','И','Т','Ь','Б','Ю']
     ]
   },
-  onInit() {
-    this.loadNotes();
+  computed: {
+    displayText() {
+      if (!this.showKeyboard) return '';
+      const text = this.currentText || '';
+      return text.slice(0, this.cursorPos) + '|' + text.slice(this.cursorPos);
+    }
   },
+  onInit() { this.loadNotes(); },
   loadNotes() {
-    storage.get({
-      key: 'all_notes',
-      success: (data) => { this.notes = data ? JSON.parse(data) : []; }
-    });
+    storage.get({ key: 'all_notes', success: (data) => { this.notes = data ? JSON.parse(data) : []; } });
   },
   saveNotes() {
     storage.set({ key: 'all_notes', value: JSON.stringify(this.notes) });
@@ -74,12 +83,14 @@ export default {
     this.notes.push('');
     this.currentIndex = this.notes.length - 1;
     this.currentText = '';
+    this.cursorPos = 0;
     this.showKeyboard = true;
     this.saveNotes();
   },
   openNote(index) {
     this.currentIndex = index;
-    this.currentText = this.notes[index];
+    this.currentText = this.notes[index] || '';
+    this.cursorPos = this.currentText.length;
     this.showKeyboard = true;
   },
   deleteNote(index) {
@@ -87,17 +98,25 @@ export default {
     this.saveNotes();
   },
   addChar(char) {
-    this.currentText += char;
+    this.currentText = this.currentText.slice(0, this.cursorPos) + char + this.currentText.slice(this.cursorPos);
+    this.cursorPos += char.length;
     this.notes[this.currentIndex] = this.currentText;
     this.saveNotes();
   },
   deleteChar() {
-    this.currentText = this.currentText.slice(0, -1);
-    this.notes[this.currentIndex] = this.currentText;
-    this.saveNotes();
+    if (this.cursorPos > 0) {
+      this.currentText = this.currentText.slice(0, this.cursorPos - 1) + this.currentText.slice(this.cursorPos);
+      this.cursorPos--;
+      this.notes[this.currentIndex] = this.currentText;
+      this.saveNotes();
+    }
   },
-  closeKeyboard() {
-    this.showKeyboard = false;
-  }
+  moveCursor(dir) {
+    const newPos = this.cursorPos + dir;
+    if (newPos >= 0 && newPos <= this.currentText.length) {
+      this.cursorPos = newPos;
+    }
+  },
+  closeKeyboard() { this.showKeyboard = false; }
 }
 </script>
