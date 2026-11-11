@@ -33,9 +33,12 @@
         <input type="button" class="btn btn-action" value="{{langButtonText}}" onclick="toggleKeyboard" />
       </div>
 
-      <div class="row" for="{{row in currentKeyboard}}">
-        <input type="button" class="btn key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
-      </div>
+      <!-- Добавлена прокрутка для клавиатуры -->
+      <scroll class="keyboard-scroll" scroll-x="true">
+        <div class="row" for="{{row in currentKeyboard}}">
+          <input type="button" class="btn key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
+        </div>
+      </scroll>
     </div>
 
   </div>
@@ -71,12 +74,13 @@
   
   .note-text { font-size: 20px; color: #ffffff; width: 220px; min-height: 80px; background-color: #1c1c1e; border-radius: 10px; padding: 12px; margin-bottom: 15px; }
   
-  .row { flex-direction: row; margin-bottom: 6px; justify-content: center; width: 240px; }
+  .row { flex-direction: row; margin-bottom: 6px; justify-content: center; width: 100%; }
   .btn-action { width: 70px; height: 45px; font-size: 16px; margin: 0 3px; }
   .btn-space { width: 80px; }
   
-  /* Обновлено: кнопки теперь автоматически растягиваются по ширине строки */
-  .key { flex: 1; height: 45px; font-size: 18px; margin: 0 2px; }
+  /* Стили для прокрутки и увеличенных кнопок */
+  .keyboard-scroll { width: 240px; flex-direction: column; }
+  .key { min-width: 35px; height: 45px; font-size: 18px; margin: 0 2px; }
 </style>
 
 <script>
