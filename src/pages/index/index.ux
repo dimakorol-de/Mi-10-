@@ -33,10 +33,12 @@
         <input type="button" class="btn btn-action" value="{{langButtonText}}" onclick="toggleKeyboard" />
       </div>
 
-      <!-- Каждая строка клавиатуры теперь прокручивается отдельно -->
-      <scroll class="keyboard-row-scroll" scroll-x="true" for="{{row in currentKeyboard}}">
-        <div class="row">
-          <input type="button" class="btn key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
+      <!-- Вся клавиатура прокручивается целиком -->
+      <scroll class="keyboard-scroll" scroll-x="true">
+        <div class="keyboard-inner">
+          <div class="row" for="{{row in currentKeyboard}}">
+            <input type="button" class="btn key" for="{{char in row}}" value="{{char}}" onclick="addChar(char)" />
+          </div>
         </div>
       </scroll>
     </div>
@@ -74,12 +76,13 @@
   
   .note-text { font-size: 20px; color: #ffffff; width: 220px; min-height: 80px; background-color: #1c1c1e; border-radius: 10px; padding: 12px; margin-bottom: 15px; }
   
-  .row { flex-direction: row; margin-bottom: 6px; justify-content: flex-start; }
+  .row { flex-direction: row; margin-bottom: 6px; justify-content: center; }
   .btn-action { width: 70px; height: 45px; font-size: 16px; margin: 0 3px; }
   .btn-space { width: 80px; }
   
-  /* Стили для построчной прокрутки */
-  .keyboard-row-scroll { width: 240px; margin-bottom: 6px; }
+  /* Общая прокрутка для всей клавиатуры */
+  .keyboard-scroll { width: 240px; }
+  .keyboard-inner { flex-direction: column; padding: 0 10px; }
   .key { width: 35px; height: 45px; font-size: 18px; margin: 0 2px; flex-shrink: 0; }
 </style>
 
