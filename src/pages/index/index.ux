@@ -74,7 +74,9 @@
   .row { flex-direction: row; margin-bottom: 6px; justify-content: center; width: 240px; }
   .btn-action { width: 70px; height: 45px; font-size: 16px; margin: 0 3px; }
   .btn-space { width: 80px; }
-  .key { width: 22px; height: 45px; font-size: 18px; margin: 0 2px; }
+  
+  /* Обновлено: кнопки теперь автоматически растягиваются по ширине строки */
+  .key { flex: 1; height: 45px; font-size: 18px; margin: 0 2px; }
 </style>
 
 <script>
