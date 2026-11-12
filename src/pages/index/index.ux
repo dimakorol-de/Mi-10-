@@ -17,7 +17,6 @@
         <input type="button" class="btn btn-sm btn-red" value="Удалить" onclick="deleteNote" />
       </div>
       
-      <!-- Прокрутка для текста при просмотре -->
       <scroll class="text-scroll" scroll-y="true">
         <text class="note-text" ondblclick="editNote">{{notes[currentIndex]}}</text>
       </scroll>
@@ -31,7 +30,6 @@
         <input type="button" class="btn btn-save" value="Сохранить" onclick="saveAndRead" />
       </div>
       
-      <!-- Прокрутка для текста при редактировании -->
       <scroll class="text-scroll" scroll-y="true">
         <text class="note-text">{{text}}</text>
       </scroll>
@@ -74,7 +72,9 @@
   
   .btn-add { width: 200px; height: 45px; margin-bottom: 15px; }
   .note-item { width: 200px; padding: 12px; background-color: #1c1c1e; border-radius: 10px; margin-bottom: 8px; }
-  .note-title { font-size: 18px; color: #ffffff; }
+  
+  /* Обрезаем текст до одной строки с многоточием */
+  .note-title { font-size: 18px; color: #ffffff; lines: 1; text-overflow: ellipsis; }
   
   .header { width: 220px; flex-direction: row; justify-content: space-between; margin-bottom: 15px; }
   .btn-sm { width: 100px; height: 40px; font-size: 16px; }
@@ -82,7 +82,6 @@
   .btn-save { width: 220px; height: 45px; background-color: #34c759; margin-bottom: 10px; }
   .btn-edit { width: 220px; height: 45px; background-color: #007aff; margin-top: 15px; }
   
-  /* Область для текста с прокруткой */
   .text-scroll { width: 220px; height: 100px; background-color: #1c1c1e; border-radius: 10px; margin-bottom: 15px; }
   .note-text { font-size: 20px; color: #ffffff; width: 100%; padding: 12px; }
   
