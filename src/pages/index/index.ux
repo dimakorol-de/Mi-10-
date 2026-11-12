@@ -16,7 +16,12 @@
         <input type="button" class="btn btn-sm" value="← Назад" onclick="goToList" />
         <input type="button" class="btn btn-sm btn-red" value="Удалить" onclick="deleteNote" />
       </div>
-      <text class="note-text" ondblclick="editNote">{{notes[currentIndex]}}</text>
+      
+      <!-- Прокрутка для текста при просмотре -->
+      <scroll class="text-scroll" scroll-y="true">
+        <text class="note-text" ondblclick="editNote">{{notes[currentIndex]}}</text>
+      </scroll>
+      
       <input type="button" class="btn btn-edit" value="Редактировать" onclick="editNote" />
     </div>
 
@@ -25,7 +30,11 @@
       <div class="header">
         <input type="button" class="btn btn-save" value="Сохранить" onclick="saveAndRead" />
       </div>
-      <text class="note-text">{{text}}</text>
+      
+      <!-- Прокрутка для текста при редактировании -->
+      <scroll class="text-scroll" scroll-y="true">
+        <text class="note-text">{{text}}</text>
+      </scroll>
       
       <div class="row">
         <input type="button" class="btn btn-action" value="⌫" onclick="deleteChar" />
@@ -33,7 +42,6 @@
         <input type="button" class="btn btn-action" value="{{langButtonText}}" onclick="toggleKeyboard" />
       </div>
 
-      <!-- Вся клавиатура прокручивается целиком -->
       <scroll class="keyboard-scroll" scroll-x="true">
         <div class="keyboard-inner">
           <div class="row" for="{{row in currentKeyboard}}">
@@ -74,13 +82,14 @@
   .btn-save { width: 220px; height: 45px; background-color: #34c759; margin-bottom: 10px; }
   .btn-edit { width: 220px; height: 45px; background-color: #007aff; margin-top: 15px; }
   
-  .note-text { font-size: 20px; color: #ffffff; width: 220px; min-height: 80px; background-color: #1c1c1e; border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+  /* Область для текста с прокруткой */
+  .text-scroll { width: 220px; height: 100px; background-color: #1c1c1e; border-radius: 10px; margin-bottom: 15px; }
+  .note-text { font-size: 20px; color: #ffffff; width: 100%; padding: 12px; }
   
   .row { flex-direction: row; margin-bottom: 6px; justify-content: center; }
   .btn-action { width: 70px; height: 45px; font-size: 16px; margin: 0 3px; }
   .btn-space { width: 80px; }
   
-  /* Общая прокрутка для всей клавиатуры */
   .keyboard-scroll { width: 240px; }
   .keyboard-inner { flex-direction: column; padding: 0 10px; }
   .key { width: 35px; height: 45px; font-size: 18px; margin: 0 2px; flex-shrink: 0; }
@@ -96,7 +105,7 @@ export default {
     notes: [],
     currentIndex: -1,
     text: '',
-    keyboardMode: 0, // 0: RU, 1: EN, 2: NUM/SYM
+    keyboardMode: 0,
     lettersRU: [
       ['Й','Ц','У','К','Е','Н','Г','Ш','Щ','З'],
       ['Ф','Ы','В','А','П','Р','О','Л','Д','Ж'],
