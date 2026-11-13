@@ -12,22 +12,23 @@
 
     <!-- ПРОСМОТР ЗАМЕТКИ -->
     <div if="{{view === 'read'}}" class="read-container">
-      <div class="header">
+      <div class="header" show="{{!isFocusMode}}">
         <input type="button" class="btn btn-sm" value="← Назад" onclick="goToList" />
         <input type="button" class="btn btn-sm btn-red" value="Удалить" onclick="deleteNote" />
       </div>
       
-      <scroll class="text-scroll" scroll-y="true">
-        <text class="note-text" ondblclick="editNote">{{notes[currentIndex].text}}</text>
+      <!-- Тройное нажатие активирует полноэкранный режим -->
+      <scroll class="text-scroll" style="height: {{isFocusMode ? '250px' : '100px'}}" scroll-y="true">
+        <text class="note-text" onclick="handleTripleTap" ondblclick="editNote">{{notes[currentIndex].text}}</text>
       </scroll>
       
-      <div class="color-picker">
+      <div class="color-picker" show="{{!isFocusMode}}">
         <input type="button" class="color-btn" style="background-color: #007aff" onclick="updateColor('#007aff')" />
         <input type="button" class="color-btn" style="background-color: #ff453a" onclick="updateColor('#ff453a')" />
         <input type="button" class="color-btn" style="background-color: #34c759" onclick="updateColor('#34c759')" />
       </div>
       
-      <input type="button" class="btn btn-edit" value="Редактировать" onclick="editNote" />
+      <input type="button" class="btn btn-edit" value="Редактировать" onclick="editNote" show="{{!isFocusMode}}" />
     </div>
 
     <!-- РЕДАКТИРОВАНИЕ (КЛАВИАТУРА) -->
@@ -78,8 +79,7 @@
   .color-picker { flex-direction: row; justify-content: center; margin-top: 10px; margin-bottom: 10px; }
   .color-btn { width: 30px; height: 30px; border-radius: 15px; margin: 0 10px; }
   
-  /* Добавлены отступы для текста */
-  .text-scroll { width: 220px; height: 80px; background-color: #1c1c1e; border-radius: 10px; }
+  .text-scroll { width: 220px; background-color: #1c1c1e; border-radius: 10px; }
   .note-text { font-size: 20px; color: #ffffff; padding: 10px 15px; }
   
   .row { flex-direction: row; margin-bottom: 6px; justify-content: center; }
@@ -98,6 +98,7 @@ import app from '@system.app';
 export default {
   private: {
     view: 'list', notes: [], currentIndex: -1, text: '', keyboardMode: 0,
+    isFocusMode: false, tapCount: 0, lastTapTime: 0,
     lettersRU: [['Й','Ц','У','К','Е','Н','Г','Ш','Щ','З'],['Ф','Ы','В','А','П','Р','О','Л','Д','Ж'],['Я','Ч','С','М','И','Т','Ь','Б','Ю','Х']],
     lettersEN: [['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['Z','X','C','V','B','N','M']],
     symbols: [['1','2','3','4','5','6','7','8','9','0'],['+','-','=','*','/','"',"'",'.',',']]
@@ -110,7 +111,7 @@ export default {
   load() { storage.get({ key: 'notes_list', success: (data) => { this.notes = data ? JSON.parse(data) : []; } }); },
   save() { storage.set({ key: 'notes_list', value: JSON.stringify(this.notes) }); },
   createNote() { this.notes.push({text: '', color: '#1c1c1e'}); this.currentIndex = this.notes.length - 1; this.text = ''; this.view = 'edit'; },
-  openNote(index) { this.currentIndex = index; this.view = 'read'; },
+  openNote(index) { this.currentIndex = index; this.isFocusMode = false; this.view = 'read'; },
   editNote() { this.text = this.notes[this.currentIndex].text || ''; this.view = 'edit'; },
   saveAndRead() { this.notes[this.currentIndex].text = this.text; this.save(); this.view = 'read'; },
   updateColor(color) { this.notes[this.currentIndex].color = color; this.save(); },
@@ -119,6 +120,20 @@ export default {
   addChar(char) { this.text += char; },
   deleteChar() { this.text = this.text.slice(0, -1); },
   toggleKeyboard() { this.keyboardMode = (this.keyboardMode + 1) % 3; },
+  handleTripleTap() {
+    const now = new Date().getTime();
+    if (now - this.lastTapTime < 300) {
+      this.tapCount++;
+    } else {
+      this.tapCount = 1;
+    }
+    this.lastTapTime = now;
+    
+    if (this.tapCount === 3) {
+      this.isFocusMode = !this.isFocusMode;
+      this.tapCount = 0;
+    }
+  },
   handleSwipe(evt) {
     if (evt.direction === 'right') {
       if (this.view === 'edit') this.saveAndRead();
