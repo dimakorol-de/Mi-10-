@@ -17,9 +17,8 @@
         <input type="button" class="btn btn-sm btn-red" value="Удалить" onclick="deleteNote" />
       </div>
       
-      <!-- Тройное нажатие активирует полноэкранный режим -->
       <scroll class="text-scroll" style="height: {{isFocusMode ? '250px' : '100px'}}" scroll-y="true">
-        <text class="note-text" onclick="handleTripleTap" ondblclick="editNote">{{notes[currentIndex].text}}</text>
+        <text class="note-text" ondblclick="editNote">{{notes[currentIndex].text}}</text>
       </scroll>
       
       <div class="color-picker" show="{{!isFocusMode}}">
@@ -28,6 +27,7 @@
         <input type="button" class="color-btn" style="background-color: #34c759" onclick="updateColor('#34c759')" />
       </div>
       
+      <input type="button" class="btn btn-edit" value="На весь экран" onclick="enterFocusMode" show="{{!isFocusMode}}" />
       <input type="button" class="btn btn-edit" value="Редактировать" onclick="editNote" show="{{!isFocusMode}}" />
     </div>
 
@@ -98,7 +98,7 @@ import app from '@system.app';
 export default {
   private: {
     view: 'list', notes: [], currentIndex: -1, text: '', keyboardMode: 0,
-    isFocusMode: false, tapCount: 0, lastTapTime: 0,
+    isFocusMode: false,
     lettersRU: [['Й','Ц','У','К','Е','Н','Г','Ш','Щ','З'],['Ф','Ы','В','А','П','Р','О','Л','Д','Ж'],['Я','Ч','С','М','И','Т','Ь','Б','Ю','Х']],
     lettersEN: [['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['Z','X','C','V','B','N','M']],
     symbols: [['1','2','3','4','5','6','7','8','9','0'],['+','-','=','*','/','"',"'",'.',',']]
@@ -120,25 +120,18 @@ export default {
   addChar(char) { this.text += char; },
   deleteChar() { this.text = this.text.slice(0, -1); },
   toggleKeyboard() { this.keyboardMode = (this.keyboardMode + 1) % 3; },
-  handleTripleTap() {
-    const now = new Date().getTime();
-    if (now - this.lastTapTime < 300) {
-      this.tapCount++;
-    } else {
-      this.tapCount = 1;
-    }
-    this.lastTapTime = now;
-    
-    if (this.tapCount === 3) {
-      this.isFocusMode = !this.isFocusMode;
-      this.tapCount = 0;
-    }
-  },
+  enterFocusMode() { this.isFocusMode = true; },
   handleSwipe(evt) {
     if (evt.direction === 'right') {
-      if (this.view === 'edit') this.saveAndRead();
-      else if (this.view === 'read') this.goToList();
-      else app.terminate();
+      if (this.isFocusMode) {
+        this.isFocusMode = false;
+      } else if (this.view === 'edit') {
+        this.saveAndRead();
+      } else if (this.view === 'read') {
+        this.goToList();
+      } else {
+        app.terminate();
+      }
     }
   }
 }
