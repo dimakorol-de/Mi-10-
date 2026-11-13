@@ -17,9 +17,9 @@
         <input type="button" class="btn btn-sm btn-red" value="Удалить" onclick="deleteNote" />
       </div>
       
-      <div class="text-box">
+      <scroll class="text-scroll" scroll-y="true">
         <text class="note-text" ondblclick="editNote">{{notes[currentIndex].text}}</text>
-      </div>
+      </scroll>
       
       <div class="color-picker">
         <input type="button" class="color-btn" style="background-color: #007aff" onclick="updateColor('#007aff')" />
@@ -36,9 +36,9 @@
         <input type="button" class="btn btn-save" value="Сохранить" onclick="saveAndRead" />
       </div>
       
-      <div class="text-box">
+      <scroll class="text-scroll" scroll-y="true">
         <text class="note-text">{{text}}</text>
-      </div>
+      </scroll>
       
       <div class="row">
         <input type="button" class="btn btn-action" value="⌫" onclick="deleteChar" />
@@ -78,8 +78,9 @@
   .color-picker { flex-direction: row; justify-content: center; margin-top: 10px; margin-bottom: 10px; }
   .color-btn { width: 30px; height: 30px; border-radius: 15px; margin: 0 10px; }
   
-  .text-box { width: 220px; height: 80px; background-color: #1c1c1e; border-radius: 10px; padding: 5px; }
-  .note-text { font-size: 20px; color: #ffffff; }
+  /* Добавлены отступы для текста */
+  .text-scroll { width: 220px; height: 80px; background-color: #1c1c1e; border-radius: 10px; }
+  .note-text { font-size: 20px; color: #ffffff; padding: 10px 15px; }
   
   .row { flex-direction: row; margin-bottom: 6px; justify-content: center; }
   .btn-action { width: 70px; height: 45px; font-size: 16px; margin: 0 3px; }
